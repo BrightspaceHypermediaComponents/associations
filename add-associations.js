@@ -204,7 +204,7 @@ class AssociationList extends LocalizeMixin(LitElement) {
 					</div>
 				</div>
 				<div class="add-associations-list-action" slot="actions">
-					<a href="${previewHref}" target="_blank" label="${this.localize('preview')}">
+					<a href="${previewHref}" target="_blank" aria-label="${this.localize('preview')}">
 						<d2l-icon icon="tier1:preview"></d2l-icon>
 					</a>
 				</div>

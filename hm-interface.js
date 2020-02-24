@@ -82,7 +82,10 @@ export class HmInterface {
 			throw new Error('no href provided');
 		}
 
-		const token = await this.getToken();
+		let token = await this.getToken();
+		if (token && token.indexOf('Bearer ') !== 0) {
+			token = 'Bearer ' + token;
+		}
 		const headers = { Authorization: token };
 		if (contentType) {
 			headers['content-type'] = contentType;

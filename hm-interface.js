@@ -84,7 +84,7 @@ export class HmInterface {
 
 		let token = await this.getToken();
 		if (token && token.indexOf('Bearer ') !== 0) {
-			token = 'Bearer ' + token;
+			token = `Bearer ${token}`;
 		}
 		const headers = { Authorization: token };
 		if (contentType) {

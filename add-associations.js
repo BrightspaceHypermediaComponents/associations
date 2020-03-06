@@ -191,7 +191,14 @@ class AssociationList extends LocalizeMixin(LitElement) {
 	}
 
 	_sendDoneWorkEvent(associations) {
-		this.dispatchEvent(new CustomEvent('associations-done-work', { bubbles: true, composed: true, detail: associations }));
+		this.dispatchEvent(new CustomEvent(
+			'associations-done-work',
+			{
+				bubbles: true,
+				composed: true,
+				detail: {associations}
+			}
+		));
 	}
 
 	_sendAssociationsAddedEvent() {

@@ -9,10 +9,10 @@ export class HmInterface {
 		token,
 	}) {
 		this.href = href;
+		this.token = token;
 		this.setupPromise = this.setup();
 		this.stopped = false;
 		this.type = type;
-		this.token = token;
 	}
 
 	checkForRequiredParams() {

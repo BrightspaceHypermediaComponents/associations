@@ -20,7 +20,8 @@ class AssociationList extends LocalizeMixin(LitElement) {
 			_state: { type: Object },
 			token: { type: String },
 			type: { type: String },
-			_textFilter: { type: String }
+			_textFilter: { type: String },
+			skipSave: { type: Boolean }
 		};
 	}
 
@@ -173,22 +174,31 @@ class AssociationList extends LocalizeMixin(LitElement) {
 		const associations = this.potentialAssociations
 			.filter(x => selectedAssociations.indexOf(x.item.getLinkByRel('self').href) > -1)
 			.map(x => x.association);
-		const associationPromises = associations.map(x => this.hmInterface.setActivityUsageItemAssociations(x));
-		await Promise.all(associationPromises).catch(() => this.setState(this.states.errorAdding));
+		if (!this.skipSave) {
+			const associationPromises = associations.map(x => this.hmInterface.setActivityUsageItemAssociations(x));
+			await Promise.all(associationPromises).catch(() => this.setState(this.states.errorAdding));
+		}
 		this._sendAssociationsAddedEvent();
-		this._clearAndClose();
+		this._clearAndClose(associations);
 	}
 
 	_cancelClicked() {
 		this._clearAndClose();
 	}
 
-	_clearAndClose() {
-		this._sendDoneWorkEvent();
+	_clearAndClose(associations) {
+		this._sendDoneWorkEvent(associations);
 	}
 
-	_sendDoneWorkEvent() {
-		this.dispatchEvent(new CustomEvent('associations-done-work', { bubbles: true, composed: true }));
+	_sendDoneWorkEvent(associations) {
+		this.dispatchEvent(new CustomEvent(
+			'associations-done-work',
+			{
+				bubbles: true,
+				composed: true,
+				detail: {associations}
+			}
+		));
 	}
 
 	_sendAssociationsAddedEvent() {

@@ -35,15 +35,16 @@
 			'https://99d6c88f-3f9e-45e6-b804-988b1f68e463.rubrics.api.dev.brightspace.com/organizations/123060/17': window.rubric2,
 			'https://99d6c88f-3f9e-45e6-b804-988b1f68e463.rubrics.api.dev.brightspace.com/organizations/123060/18': window.rubric3,
 		};
-		window.fetch = async (href) => {
+		window.fetch = async(href) => {
 			const body = await href.formData().catch(() => '');
 			console.debug(href, Array.from(body));
 			if (href.url.startsWith('https://99d6c88f-3f9e-45e6-b804-988b1f68e463.activities.api.dev.brightspace.com/activities/6606_703000_8d6566eb-6f69-4a73-b08d-e787f9f4b87b/usages/123060/associations') && href.method === 'POST') {
 				const save = !!body.get('save');
-				return new Response(JSON.stringify(window.getNewAssociations(
-					save,
-					save ? [] : body.getAll('transient-add'),
-					save ? [] : body.getAll('transient-remove'))),
+				return new Response(
+					JSON.stringify(window.getNewAssociations(
+						save,
+						save ? [] : body.getAll('transient-add'),
+						save ? [] : body.getAll('transient-remove'))),
 					{ status: 200 }
 				);
 			}

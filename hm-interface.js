@@ -13,6 +13,7 @@ export class HmInterface {
 		this.setupPromise = this.setup();
 		this.stopped = false;
 		this.type = type;
+		this.requestPromise = null;
 	}
 
 	checkForRequiredParams() {
@@ -27,18 +28,49 @@ export class HmInterface {
 
 	async setActivityUsageItemAssociations(associationEntity) {
 		const createAssociationAction = associationEntity.getActionByName('create-association');
-		const searchParams = new URLSearchParams();
-		createAssociationAction.fields.forEach(field => {
-			if (Array.isArray(field.value)) {
-				field.value.forEach(value => searchParams.append(field.name, value));
-			} else {
-				searchParams.append(field.name, field.value);
-			}
-		});
-		const updated = await this.makeCall(createAssociationAction.href, { method: 'POST', body: searchParams, contentType: 'application/x-www-form-urlencoded' });
+		const searchParams = this.getActionBody(createAssociationAction);
+		const updated = await this.makeCall(createAssociationAction.href, { method: createAssociationAction.method, body: searchParams, contentType: 'application/x-www-form-urlencoded' });
 
 		window.D2L.Siren.EntityStore.update(this.associationsHref, await this.getToken(), updated);
 		return updated;
+	}
+
+	async toggleAssociation(associationEntity) {
+		await this.requestPromise;
+		let resolveRequestPromise;
+		this.requestPromise = new Promise((resolve) => resolveRequestPromise = resolve);
+		try {
+			const action = associationEntity.getActionByName('create-association') || associationEntity.getActionByName('delete-association');
+			const searchParams = this.getActionBody(action);
+			const updated = await this.makeCall(action.href, { method: action.method, body: searchParams, contentType: 'application/x-www-form-urlencoded' });
+
+			window.D2L.Siren.EntityStore.update(this.associationsHref, await this.getToken(), updated);
+			this.associations = updated;
+			this.potentialAssociations = this.associations.getSubEntitiesByClass(Classes.activities.potentialAssociation);
+			const augmentedPotentialAssociations = this.potentialAssociations.map(this.fetchItemForPotentialAssociation, this);
+			this.augmentedPotentialAssociations = await Promise.all(augmentedPotentialAssociations);
+			return updated;
+		} finally {
+			this.requestPromise = null;
+			resolveRequestPromise();
+		}
+	}
+
+	async apply() {
+		await this.requestPromise;
+		let resolveRequestPromise;
+		this.requestPromise = new Promise((resolve) => resolveRequestPromise = resolve);
+		try {
+			const action = this.associations.getActionByName('apply-associations');
+			const searchParams = this.getActionBody(action);
+			const updated = await this.makeCall(action.href, { method: action.method, body: searchParams, contentType: 'application/x-www-form-urlencoded' });
+
+			window.D2L.Siren.EntityStore.update(this.associationsHref, await this.getToken(), updated);
+			return updated;
+		} finally {
+			this.requestPromise = null;
+			resolveRequestPromise();
+		}
 	}
 
 	async setup() {
@@ -47,6 +79,11 @@ export class HmInterface {
 		const queryAssociationsAction = this.activityUsage.getActionByName('query-associations');
 		this.associationsHref = this.getQueryActionHref(queryAssociationsAction, { type: this.type.name });
 		this.associations = await this.makeCall(this.associationsHref);
+		if (this.associations.getActionByName('start-add-associations')) {
+			const startAddAssocitionsAction = this.associations.getActionByName('start-add-associations');
+			const searchParams = this.getActionBody(startAddAssocitionsAction);
+			this.associations = await this.makeCall(startAddAssocitionsAction.href, { method: startAddAssocitionsAction.method, body: searchParams, contentType: 'application/x-www-form-urlencoded' });
+		}
 		this.potentialAssociations = this.associations.getSubEntitiesByClass(Classes.activities.potentialAssociation);
 		const augmentedPotentialAssociations = this.potentialAssociations.map(this.fetchItemForPotentialAssociation, this);
 		this.augmentedPotentialAssociations = await Promise.all(augmentedPotentialAssociations);
@@ -61,6 +98,10 @@ export class HmInterface {
 		};
 	}
 
+	associationsHasApply() {
+		return this.associations.hasActionByName('apply-associations');
+	}
+
 	getQueryActionHref(action, params) {
 		let href = action.href;
 		const queryStrings = [];
@@ -73,6 +114,22 @@ export class HmInterface {
 			href += `?${queryStrings.map(x => `${x.name}=${x.value}`).join('&')}`;
 		}
 		return href;
+	}
+
+	getActionBody(action, params = {}) {
+		const searchParams = new URLSearchParams();
+		action.fields.forEach(field => {
+			let value = field.value;
+			if (params[field.name]) {
+				value = params[field.name];
+			}
+			if (Array.isArray(value)) {
+				value.forEach(fieldValue => searchParams.append(field.name, fieldValue));
+			} else if (value) {
+				searchParams.append(field.name, value);
+			}
+		});
+		return searchParams;
 	}
 
 	async getToken() {

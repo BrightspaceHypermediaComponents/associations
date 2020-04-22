@@ -167,6 +167,17 @@ class AssociationList extends LocalizeMixin(LitElement) {
 		}, 10);
 	}
 
+	_onListItemSelected(e) {
+		if (!this.hmInterface.associationsHasApply()) {
+			return;
+		}
+		const selectedAssociation = e.target.key;
+		const association = this.potentialAssociations
+			.find(x => x.item.getLinkByRel('self').href === selectedAssociation)
+		this.hmInterface.toggleAssociation(association.association)
+			.then(() => this.potentialAssociations = this.hmInterface.augmentedPotentialAssociations);
+	}
+
 	async _selectClicked() {
 		this.setState(this.states.submitting);
 
@@ -175,8 +186,12 @@ class AssociationList extends LocalizeMixin(LitElement) {
 			.filter(x => selectedAssociations.indexOf(x.item.getLinkByRel('self').href) > -1)
 			.map(x => x.association);
 		if (!this.skipSave) {
-			const associationPromises = associations.map(x => this.hmInterface.setActivityUsageItemAssociations(x));
-			await Promise.all(associationPromises).catch(() => this.setState(this.states.errorAdding));
+			if (this.hmInterface.associationsHasApply()) {
+				await this.hmInterface.apply();
+			} else {
+				const associationPromises = associations.map(x => this.hmInterface.setActivityUsageItemAssociations(x));
+				await Promise.all(associationPromises).catch(() => this.setState(this.states.errorAdding));
+			}
 		}
 		this._sendAssociationsAddedEvent();
 		this._clearAndClose(associations);
@@ -207,7 +222,7 @@ class AssociationList extends LocalizeMixin(LitElement) {
 
 	_renderListItem(text, previewHref, href) {
 		return html`
-			<d2l-list-item selectable key="${href}">
+			<d2l-list-item selectable key="${href}" @d2l-list-item-selected="${this._onListItemSelected}">
 				<div class="add-associations-list-text">
 					<div class="add-associations-list-text-inner">
 						${text}

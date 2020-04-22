@@ -6,6 +6,7 @@
 	<script src="node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
 	<script src="./demo-data/activity-usage.js"></script>
 	<script src="./demo-data/associations.js"></script>
+	<script src="./demo-data/new-associations.js"></script>
 	<script src="./demo-data/rubrics.js"></script>
 
 	<script type="module">
@@ -27,11 +28,24 @@
 			'https://99d6c88f-3f9e-45e6-b804-988b1f68e463.activities.api.dev.brightspace.com/activities/6606_703000_8d6566eb-6f69-4a73-b08d-e787f9f4b87a/usages/123060': window.activityUsageResponse,
 			'https://99d6c88f-3f9e-45e6-b804-988b1f68e463.activities.api.dev.brightspace.com/activities/6606_703000_8d6566eb-6f69-4a73-b08d-e787f9f4b87a/usages/123060/associations?type=rubrics': window.associations,
 			'https://99d6c88f-3f9e-45e6-b804-988b1f68e463.activities.api.dev.brightspace.com/activities/6606_703000_8d6566eb-6f69-4a73-b08d-e787f9f4b87a/usages/123060/associations': window.associations,
+			'https://99d6c88f-3f9e-45e6-b804-988b1f68e463.activities.api.dev.brightspace.com/activities/6606_703000_8d6566eb-6f69-4a73-b08d-e787f9f4b87b/usages/123060': window.activityUsageResponse2,
+			'https://99d6c88f-3f9e-45e6-b804-988b1f68e463.activities.api.dev.brightspace.com/activities/6606_703000_8d6566eb-6f69-4a73-b08d-e787f9f4b87b/usages/123060/associations?type=rubrics': window.getNewAssociations(),
+			'https://99d6c88f-3f9e-45e6-b804-988b1f68e463.activities.api.dev.brightspace.com/activities/6606_703000_8d6566eb-6f69-4a73-b08d-e787f9f4b87b/usages/123060/associations': window.getNewAssociations(),
 			'https://99d6c88f-3f9e-45e6-b804-988b1f68e463.rubrics.api.dev.brightspace.com/organizations/123060/13': window.rubric1,
 			'https://99d6c88f-3f9e-45e6-b804-988b1f68e463.rubrics.api.dev.brightspace.com/organizations/123060/17': window.rubric2,
 			'https://99d6c88f-3f9e-45e6-b804-988b1f68e463.rubrics.api.dev.brightspace.com/organizations/123060/18': window.rubric3,
 		};
-		window.fetch = (href) => {
+		window.fetch = async (href) => {
+			if (href.url.startsWith('https://99d6c88f-3f9e-45e6-b804-988b1f68e463.activities.api.dev.brightspace.com/activities/6606_703000_8d6566eb-6f69-4a73-b08d-e787f9f4b87b/usages/123060/associations') && href.method === 'POST') {
+				const body = await href.formData();
+				const save = !!body.get('save');
+				return new Response(JSON.stringify(window.getNewAssociations(
+					save,
+					save ? [] : body.getAll('transient-add'),
+					save ? [] : body.getAll('transient-remove'))),
+					{ status: 200 }
+				);
+			}
 			if (!requests[href.url]) {
 				throw new Error('Href not found in demo network requests json', href);
 			}
@@ -55,7 +69,24 @@
 				token="bubbles"
 				type="rubrics"
 			></d2l-add-associations-launcher>
-		</d2l-add-associations-launcher>
+		</d2l-demo-snippet>
+
+		<h2>d2l-labs-associations with stateful API</h2>
+		<d2l-demo-snippet>
+			<d2l-add-associations
+				href="https://99d6c88f-3f9e-45e6-b804-988b1f68e463.activities.api.dev.brightspace.com/activities/6606_703000_8d6566eb-6f69-4a73-b08d-e787f9f4b87b/usages/123060"
+				token="bubbles"
+				type="rubrics"
+			></d2l-add-associations>
+		</d2l-demo-snippet>
+
+		<d2l-demo-snippet>
+			<d2l-add-associations-launcher
+				href="https://99d6c88f-3f9e-45e6-b804-988b1f68e463.activities.api.dev.brightspace.com/activities/6606_703000_8d6566eb-6f69-4a73-b08d-e787f9f4b87b/usages/123060"
+				token="bubbles"
+				type="rubrics"
+			></d2l-add-associations-launcher>
+		</d2l-demo-snippet>
 	</d2l-demo-page>
 </body>
 

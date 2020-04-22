@@ -26,6 +26,9 @@ export class HmInterface {
 		this.stopped = true;
 	}
 
+	/**
+	 * @deprecated
+	 */
 	async setActivityUsageItemAssociations(associationEntity) {
 		const createAssociationAction = associationEntity.getActionByName('create-association');
 		const searchParams = this.getActionBody(createAssociationAction);
@@ -98,6 +101,9 @@ export class HmInterface {
 		};
 	}
 
+	/**
+	 * TODO: Remove when setActivityUsageItemAssociations is no longer used
+	 */
 	associationsHasApply() {
 		return this.associations.hasActionByName('apply-associations');
 	}

@@ -173,7 +173,7 @@ class AssociationList extends LocalizeMixin(LitElement) {
 		}
 		const selectedAssociation = e.target.key;
 		const association = this.potentialAssociations
-			.find(x => x.item.getLinkByRel('self').href === selectedAssociation)
+			.find(x => x.item.getLinkByRel('self').href === selectedAssociation);
 		this.hmInterface.toggleAssociation(association.association)
 			.then(() => this.potentialAssociations = this.hmInterface.augmentedPotentialAssociations);
 	}

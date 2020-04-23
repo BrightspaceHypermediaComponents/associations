@@ -28,8 +28,13 @@ export class HmInterface {
 	async setActivityUsageItemAssociations(associationEntity) {
 		const createAssociationAction = associationEntity.getActionByName('create-association');
 		const searchParams = new URLSearchParams();
-		searchParams.append('itemId', parseInt(createAssociationAction.getFieldByName('itemId').value));
-		searchParams.append('type', createAssociationAction.getFieldByName('type').value);
+		createAssociationAction.fields.forEach(field => {
+			if (Array.isArray(field.value)) {
+				field.value.forEach(value => searchParams.append(field.name, value));
+			} else {
+				searchParams.append(field.name, field.value);
+			}
+		});
 		const updated = await this.makeCall(createAssociationAction.href, { method: 'POST', body: searchParams, contentType: 'application/x-www-form-urlencoded' });
 
 		window.D2L.Siren.EntityStore.update(this.associationsHref, await this.getToken(), updated);

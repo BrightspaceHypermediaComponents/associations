@@ -31,8 +31,7 @@ export class HmInterface {
 	 */
 	async setActivityUsageItemAssociations(associationEntity) {
 		const createAssociationAction = associationEntity.getActionByName('create-association');
-		const searchParams = this.getActionBody(createAssociationAction);
-		const updated = await this.makeCall(createAssociationAction.href, { method: createAssociationAction.method, body: searchParams, contentType: 'application/x-www-form-urlencoded' });
+		const updated = await this.makeCall(createAssociationAction);
 
 		window.D2L.Siren.EntityStore.update(this.associationsHref, await this.getToken(), updated);
 		return updated;
@@ -44,8 +43,7 @@ export class HmInterface {
 		this.requestPromise = new Promise((resolve) => resolveRequestPromise = resolve);
 		try {
 			const action = associationEntity.getActionByName('create-association') || associationEntity.getActionByName('delete-association');
-			const searchParams = this.getActionBody(action);
-			const updated = await this.makeCall(action.href, { method: action.method, body: searchParams, contentType: 'application/x-www-form-urlencoded' });
+			const updated = await this.makeCall(action);
 
 			window.D2L.Siren.EntityStore.update(this.associationsHref, await this.getToken(), updated);
 			this.associations = updated;
@@ -65,8 +63,7 @@ export class HmInterface {
 		this.requestPromise = new Promise((resolve) => resolveRequestPromise = resolve);
 		try {
 			const action = this.associations.getActionByName('apply-associations');
-			const searchParams = this.getActionBody(action);
-			const updated = await this.makeCall(action.href, { method: action.method, body: searchParams, contentType: 'application/x-www-form-urlencoded' });
+			const updated = await this.makeCall(action);
 
 			window.D2L.Siren.EntityStore.update(this.associationsHref, await this.getToken(), updated);
 			return updated;
@@ -80,12 +77,10 @@ export class HmInterface {
 		this.checkForRequiredParams();
 		this.activityUsage = await this.makeCall(this.href);
 		const queryAssociationsAction = this.activityUsage.getActionByName('query-associations');
-		this.associationsHref = this.getQueryActionHref(queryAssociationsAction, { type: this.type.name });
-		this.associations = await this.makeCall(this.associationsHref);
+		this.associations = await this.makeCall(queryAssociationsAction, { type: this.type.name });
 		if (this.associations.getActionByName('start-add-associations')) {
 			const startAddAssocitionsAction = this.associations.getActionByName('start-add-associations');
-			const searchParams = this.getActionBody(startAddAssocitionsAction);
-			this.associations = await this.makeCall(startAddAssocitionsAction.href, { method: startAddAssocitionsAction.method, body: searchParams, contentType: 'application/x-www-form-urlencoded' });
+			this.associations = await this.makeCall(startAddAssocitionsAction, { type: this.type.name });
 		}
 		this.potentialAssociations = this.associations.getSubEntitiesByClass(Classes.activities.potentialAssociation);
 		const augmentedPotentialAssociations = this.potentialAssociations.map(this.fetchItemForPotentialAssociation, this);
@@ -108,31 +103,27 @@ export class HmInterface {
 		return this.associations.hasActionByName('apply-associations');
 	}
 
-	getQueryActionHref(action, params) {
-		let href = action.href;
-		const queryStrings = [];
-		action.fields.forEach(field => {
-			if (params[field.name]) {
-				queryStrings.push({ name: field.name, value: params[field.name] });
-			}
-		});
-		if (queryStrings.length > 0) {
-			href += `?${queryStrings.map(x => `${x.name}=${x.value}`).join('&')}`;
-		}
-		return href;
-	}
-
-	getActionBody(action, params = {}) {
-		const searchParams = new URLSearchParams();
-		action.fields.forEach(field => {
+	getActionSearchParams(action, params = {}) {
+		const shouldIncludeQuery = action.method === undefined || action.method === 'GET' || action.method === 'HEAD';
+		const searchParams = shouldIncludeQuery ? new URL(action.href).searchParams : new URLSearchParams();
+		(action.fields || []).forEach(field => {
 			let value = field.value;
 			if (params[field.name]) {
 				value = params[field.name];
+				delete params[field.name];
 			}
 			if (Array.isArray(value)) {
 				value.forEach(fieldValue => searchParams.append(field.name, fieldValue));
 			} else if (value) {
 				searchParams.append(field.name, value);
+			}
+		});
+		Object.keys(params).forEach(param => {
+			const value = params[param];
+			if (Array.isArray(value)) {
+				value.forEach(fieldValue => searchParams.append(param, fieldValue));
+			} else if (value) {
+				searchParams.append(param, value);
 			}
 		});
 		return searchParams;
@@ -142,12 +133,31 @@ export class HmInterface {
 		return (typeof this.token === 'function') ? await this.token() : this.token;
 	}
 
-	async makeCall(href, { method = 'GET', body, contentType } = {}) {
+	async makeCall(action, params = {}) {
 		if (this.stopped) {
 			return;
 		}
+		let body;
+		let contentType;
+		if (typeof action === 'string') {
+			action = {
+				href: action
+			};
+		}
+		let href = action.href;
+		const method = action.method || 'GET';
+		const searchParams = this.getActionSearchParams(action, params);
 		if (!href) {
 			throw new Error('no href provided');
+		}
+
+		if ((method === 'GET' || method === 'HEAD') && searchParams instanceof URLSearchParams) {
+			const url = new URL(href);
+			url.search = searchParams.toString();
+			href = url.toString();
+		} else {
+			body = searchParams;
+			contentType = action.type || 'application/x-www-form-urlencoded';
 		}
 
 		let token = await this.getToken();

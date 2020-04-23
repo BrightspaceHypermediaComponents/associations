@@ -38,6 +38,7 @@ export class HmInterface {
 	}
 
 	async toggleAssociation(associationEntity) {
+		// Use try/finally to avoid toggling multiple associations at once
 		await this.requestPromise;
 		let resolveRequestPromise;
 		this.requestPromise = new Promise((resolve) => resolveRequestPromise = resolve);
@@ -52,12 +53,12 @@ export class HmInterface {
 			this.augmentedPotentialAssociations = await Promise.all(augmentedPotentialAssociations);
 			return updated;
 		} finally {
-			this.requestPromise = null;
 			resolveRequestPromise();
 		}
 	}
 
 	async apply() {
+		// Use try/finally to avoid calling while associations state is being built (via toggleAssociation)
 		await this.requestPromise;
 		let resolveRequestPromise;
 		this.requestPromise = new Promise((resolve) => resolveRequestPromise = resolve);
@@ -68,7 +69,6 @@ export class HmInterface {
 			window.D2L.Siren.EntityStore.update(this.associationsHref, await this.getToken(), updated);
 			return updated;
 		} finally {
-			this.requestPromise = null;
 			resolveRequestPromise();
 		}
 	}
@@ -103,6 +103,11 @@ export class HmInterface {
 		return this.associations.hasActionByName('apply-associations');
 	}
 
+	/**
+	 * @param {Action} action - Siren action to process
+	 * @param {?object} params - Object containing params to override/extend the Siren field values
+	 * @returns {URLSearchParams} URLSearchParams representing the siren fields and passed parameters
+	 */
 	getActionSearchParams(action, params = {}) {
 		const shouldIncludeQuery = action.method === undefined || action.method === 'GET' || action.method === 'HEAD';
 		const searchParams = shouldIncludeQuery ? new URL(action.href).searchParams : new URLSearchParams();
@@ -133,24 +138,32 @@ export class HmInterface {
 		return (typeof this.token === 'function') ? await this.token() : this.token;
 	}
 
+	/**
+	 * @param {Action|string} action - The Siren action to perform or href to fetch. Currently only supports URLSearchParams body type
+	 * @param {?object} params - Object containing params to override/extend the Siren field values, or query params to send with href
+	 * @param {Promise<Entity | undefined>} Siren Entity if call is successful, or undefined if HmInterface is stopped
+	 */
 	async makeCall(action, params = {}) {
 		if (this.stopped) {
 			return;
 		}
-		let body;
-		let contentType;
+
+		// Handle action as an href
 		if (typeof action === 'string') {
 			action = {
 				href: action
 			};
 		}
+
+		// Setup href, method, body/query params, contentType
+		let body;
+		let contentType;
 		let href = action.href;
 		const method = action.method || 'GET';
 		const searchParams = this.getActionSearchParams(action, params);
 		if (!href) {
 			throw new Error('no href provided');
 		}
-
 		if ((method === 'GET' || method === 'HEAD') && searchParams instanceof URLSearchParams) {
 			const url = new URL(href);
 			url.search = searchParams.toString();
@@ -160,6 +173,7 @@ export class HmInterface {
 			contentType = action.type || 'application/x-www-form-urlencoded';
 		}
 
+		// Prepare headers
 		let token = await this.getToken();
 		if (token && token.indexOf('Bearer ') !== 0) {
 			token = `Bearer ${token}`;
@@ -169,6 +183,7 @@ export class HmInterface {
 			headers['content-type'] = contentType;
 		}
 
+		// Actually make the call
 		const response = await d2lfetch.fetch(new Request(href, {
 			method,
 			body: body,

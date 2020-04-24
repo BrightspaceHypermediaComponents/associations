@@ -24,36 +24,36 @@ function getAssociations(root = true, transientAdd = [], transientRemove = []) {
 					}
 				],
 				'actions': (root ? [{
-						'href': 'https://99d6c88f-3f9e-45e6-b804-988b1f68e463.activities.api.dev.brightspace.com/activities/6606_703000_8d6566eb-6f69-4a73-b08d-e787f9f4b87b/usages/123060/associations',
-						'name': 'delete-association',
-						'method': 'POST',
-						'fields': [
-							{
-								'name': 'transient-remove',
-								'value': ['13'].concat(transientRemove)
-							},
-							{
-								'name': 'save',
-								'type': 'checkbox',
-								'value': 'true'
-							}
-						]
-					}] : []).concat([{
-						'href': 'https://99d6c88f-3f9e-45e6-b804-988b1f68e463.activities.api.dev.brightspace.com/activities/6606_703000_8d6566eb-6f69-4a73-b08d-e787f9f4b87b/usages/123060/associations',
-						'name': 'delete-association-deferred',
-						'method': 'POST',
-						'fields': [
-							{
-								'name': 'transient-remove',
-								'value': ['13'].concat(transientRemove)
-							},
-							{
-								'name': 'save',
-								'type': 'checkbox',
-								'value': ''
-							}
-						]
-					}
+					'href': 'https://99d6c88f-3f9e-45e6-b804-988b1f68e463.activities.api.dev.brightspace.com/activities/6606_703000_8d6566eb-6f69-4a73-b08d-e787f9f4b87b/usages/123060/associations',
+					'name': 'delete-association',
+					'method': 'POST',
+					'fields': [
+						{
+							'name': 'transient-remove',
+							'value': ['13'].concat(transientRemove)
+						},
+						{
+							'name': 'save',
+							'type': 'checkbox',
+							'value': 'true'
+						}
+					]
+				}] : []).concat([{
+					'href': 'https://99d6c88f-3f9e-45e6-b804-988b1f68e463.activities.api.dev.brightspace.com/activities/6606_703000_8d6566eb-6f69-4a73-b08d-e787f9f4b87b/usages/123060/associations',
+					'name': 'delete-association-deferred',
+					'method': 'POST',
+					'fields': [
+						{
+							'name': 'transient-remove',
+							'value': ['13'].concat(transientRemove)
+						},
+						{
+							'name': 'save',
+							'type': 'checkbox',
+							'value': ''
+						}
+					]
+				}
 				]),
 				'links': [
 					{
@@ -91,43 +91,43 @@ function getAssociations(root = true, transientAdd = [], transientRemove = []) {
 					}
 				],
 				'actions': (root ? [{
-						'href': 'https://99d6c88f-3f9e-45e6-b804-988b1f68e463.activities.api.dev.brightspace.com/activities/6606_703000_8d6566eb-6f69-4a73-b08d-e787f9f4b87b/usages/123060/associations',
-						'name': 'create-association',
-						'method': 'POST',
-						'fields': [
-							{
-								'name': 'transient-add',
-								'value': ['17'].concat(transientAdd)
-							},
-							{
-								'name': 'type',
-								'value': 'rubrics'
-							},
-							{
-								'name': 'save',
-								'type': 'checkbox',
-								'value': 'true'
-							}
-						]
-					}] : []).concat([{
-						'href': 'https://99d6c88f-3f9e-45e6-b804-988b1f68e463.activities.api.dev.brightspace.com/activities/6606_703000_8d6566eb-6f69-4a73-b08d-e787f9f4b87b/usages/123060/associations',
-						'name': 'create-association-deferred',
-						'method': 'POST',
-						'fields': [
-							{
-								'name': 'transient-add',
-								'value': ['17'].concat(transientAdd)
-							},
-							{
-								'name': 'type',
-								'value': 'rubrics'
-							},
-							{
-								'name': 'save',
-								'type': 'checkbox',
-								'value': ''
-							}
-						]
+					'href': 'https://99d6c88f-3f9e-45e6-b804-988b1f68e463.activities.api.dev.brightspace.com/activities/6606_703000_8d6566eb-6f69-4a73-b08d-e787f9f4b87b/usages/123060/associations',
+					'name': 'create-association',
+					'method': 'POST',
+					'fields': [
+						{
+							'name': 'transient-add',
+							'value': ['17'].concat(transientAdd)
+						},
+						{
+							'name': 'type',
+							'value': 'rubrics'
+						},
+						{
+							'name': 'save',
+							'type': 'checkbox',
+							'value': 'true'
+						}
+					]
+				}] : []).concat([{
+					'href': 'https://99d6c88f-3f9e-45e6-b804-988b1f68e463.activities.api.dev.brightspace.com/activities/6606_703000_8d6566eb-6f69-4a73-b08d-e787f9f4b87b/usages/123060/associations',
+					'name': 'create-association-deferred',
+					'method': 'POST',
+					'fields': [
+						{
+							'name': 'transient-add',
+							'value': ['17'].concat(transientAdd)
+						},
+						{
+							'name': 'type',
+							'value': 'rubrics'
+						},
+						{
+							'name': 'save',
+							'type': 'checkbox',
+							'value': ''
+						}
+					]
 				}]),
 				'links': [
 					{
@@ -159,43 +159,43 @@ function getAssociations(root = true, transientAdd = [], transientRemove = []) {
 					}
 				],
 				'actions': (root ? [{
-						'href': 'https://99d6c88f-3f9e-45e6-b804-988b1f68e463.activities.api.dev.brightspace.com/activities/6606_703000_8d6566eb-6f69-4a73-b08d-e787f9f4b87b/usages/123060/associations',
-						'name': 'create-association',
-						'method': 'POST',
-						'fields': [
-							{
-								'name': 'transient-add',
-								'value': ['18'].concat(transientAdd)
-							},
-							{
-								'name': 'type',
-								'value': 'rubrics'
-							},
-							{
-								'name': 'save',
-								'type': 'checkbox',
-								'value': 'true'
-							}
-						]
-					}] : []).concat([{
-						'href': 'https://99d6c88f-3f9e-45e6-b804-988b1f68e463.activities.api.dev.brightspace.com/activities/6606_703000_8d6566eb-6f69-4a73-b08d-e787f9f4b87b/usages/123060/associations',
-						'name': 'create-association-deferred',
-						'method': 'POST',
-						'fields': [
-							{
-								'name': 'transient-add',
-								'value': ['18'].concat(transientAdd)
-							},
-							{
-								'name': 'type',
-								'value': 'rubrics'
-							},
-							{
-								'name': 'save',
-								'type': 'checkbox',
-								'value': ''
-							}
-						]
+					'href': 'https://99d6c88f-3f9e-45e6-b804-988b1f68e463.activities.api.dev.brightspace.com/activities/6606_703000_8d6566eb-6f69-4a73-b08d-e787f9f4b87b/usages/123060/associations',
+					'name': 'create-association',
+					'method': 'POST',
+					'fields': [
+						{
+							'name': 'transient-add',
+							'value': ['18'].concat(transientAdd)
+						},
+						{
+							'name': 'type',
+							'value': 'rubrics'
+						},
+						{
+							'name': 'save',
+							'type': 'checkbox',
+							'value': 'true'
+						}
+					]
+				}] : []).concat([{
+					'href': 'https://99d6c88f-3f9e-45e6-b804-988b1f68e463.activities.api.dev.brightspace.com/activities/6606_703000_8d6566eb-6f69-4a73-b08d-e787f9f4b87b/usages/123060/associations',
+					'name': 'create-association-deferred',
+					'method': 'POST',
+					'fields': [
+						{
+							'name': 'transient-add',
+							'value': ['18'].concat(transientAdd)
+						},
+						{
+							'name': 'type',
+							'value': 'rubrics'
+						},
+						{
+							'name': 'save',
+							'type': 'checkbox',
+							'value': ''
+						}
+					]
 				}]),
 				'links': [
 					{

@@ -8,7 +8,6 @@
   "files": [
     "add-associations.js",
     "add-associations-launcher.js",
-    "hm-interface.js",
     "lang",
     "types"
   ],

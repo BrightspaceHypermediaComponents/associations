@@ -7,15 +7,22 @@ import 'd2l-alert/d2l-alert';
 import 'd2l-loading-spinner/d2l-loading-spinner';
 import { css, html, LitElement } from 'lit-element/lit-element.js';
 import getType from './types/getType';
-import { HmInterface } from './hm-interface.js';
 import { langResources } from './lang';
+import { AsyncContainerMixin, asyncStates } from '@brightspace-ui/core/mixins/async-container/async-container-mixin.js';
 import { LocalizeMixin } from '@brightspace-ui/core/mixins/localize-mixin.js';
+import { EntityMixinLit } from 'siren-sdk/src/mixin/entity-mixin-lit.js';
+import { ActivityUsageEntity } from 'siren-sdk/src/activities/ActivityUsageEntity.js';
+import { AssociationCollectionEntity } from 'siren-sdk/src/activities/Associations.js';
+import { AssociationEntity } from 'siren-sdk/src/activities/Association.js';
+import { entityFactory } from 'siren-sdk/src/es6/EntityFactory.js';
+import { SimpleEntity } from 'siren-sdk/src/es6/SimpleEntity.js';
 
-class AssociationList extends LocalizeMixin(LitElement) {
+class AssociationList extends LocalizeMixin(AsyncContainerMixin(EntityMixinLit(LitElement))) {
 
 	static get properties() {
 		return {
 			href: { type: String, attribute: 'href' },
+			associations: { type: Object },
 			potentialAssociations: { type: String },
 			_state: { type: Object },
 			token: { type: String },
@@ -107,37 +114,26 @@ class AssociationList extends LocalizeMixin(LitElement) {
 		return getType(this.type);
 	}
 
+	constructor() {
+		super();
+		this._setEntityType(ActivityUsageEntity);
+	}
+
 	connectedCallback() {
 		super.connectedCallback();
 	}
 
 	reset() {
-		if (this.hmInterface && !this.hmInterface.stopped) {
-			this.hmInterface.stop();
-		}
-
-		this.hmInterface = new HmInterface({
-			href: this.href,
-			type: this.associationType,
-			token: this.token
-		});
+		this.setState(this.states.loading);
+		this.asyncState = asyncStates.initial;
+		window.D2L.Siren.EntityStore.remove(this._entity.getAssociationsHref(this.type), this.token);
+		this._getEntity();
 
 		const search = this.shadowRoot.querySelector('d2l-input-search');
 		if (search) {
 			search.value = '';
 		}
 		this._textFilter = '';
-		this.loadStuffThenDoStuff();
-	}
-
-	async loadStuffThenDoStuff() {
-		this.setState(this.states.loading);
-		await this.hmInterface.setupPromise;
-		this.setState(this.states.selecting);
-		if (this.hmInterface.errored) {
-			this.setState(this.states.error);
-		}
-		this.potentialAssociations = this.hmInterface.augmentedPotentialAssociations;
 	}
 
 	get states() {
@@ -175,7 +171,7 @@ class AssociationList extends LocalizeMixin(LitElement) {
 			.filter(x => selectedAssociations.indexOf(x.item.getLinkByRel('self').href) > -1)
 			.map(x => x.association);
 		if (!this.skipSave) {
-			const associationPromises = associations.map(x => this.hmInterface.setActivityUsageItemAssociations(x));
+			const associationPromises = associations.map(x => x.createAssociation());
 			await Promise.all(associationPromises).catch(() => this.setState(this.states.errorAdding));
 		}
 		this._sendAssociationsAddedEvent();
@@ -276,6 +272,48 @@ class AssociationList extends LocalizeMixin(LitElement) {
 			<d2l-button slot="footer" @click="${this._cancelClicked}">${this.localize('cancel')}</d2l-button>
 			<div class="bottom"></div>
 		`;
+	}
+
+	updated(changedProperties) {
+		if (changedProperties.has('asyncState') && this.asyncState === asyncStates.complete) {
+			if (this._entity) {
+				this._entity.getAssociations(this.type, (entity, err) => {
+					if (err) {
+						this.setState(this.states.error);
+						return;
+					}
+					this.associations = entity;
+				});
+			} else {
+				this.setState(this.states.error);
+			}
+		}
+		if (changedProperties.has('associations') && this.associations) {
+			const potentialAssociationsEntities = this.associations.getPotentialAssociations();
+			const potentialAssociations = new Array(potentialAssociationsEntities.length);
+			let updated = 0;
+			potentialAssociationsEntities
+				.map(association => new AssociationEntity(association, this.token))
+				.map((association, index) => association.getItem((item, err) => {
+					if (err) {
+						this.setState(this.states.error);
+						return;
+					}
+					if (!item) {
+						return;
+					}
+					potentialAssociations[index] = {
+						association,
+						item: item._entity,
+					};
+					++updated;
+
+					if (updated === potentialAssociationsEntities.length) {
+						this.potentialAssociations = potentialAssociations;
+						this.setState(this.states.selecting);
+					}
+				}));
+		}
 	}
 
 	render() {

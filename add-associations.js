@@ -5,17 +5,14 @@ import '@brightspace-ui/core/components/list/list-item';
 import '@brightspace-ui/core/components/inputs/input-search';
 import 'd2l-alert/d2l-alert';
 import 'd2l-loading-spinner/d2l-loading-spinner';
+import { AsyncContainerMixin, asyncStates } from '@brightspace-ui/core/mixins/async-container/async-container-mixin.js';
 import { css, html, LitElement } from 'lit-element/lit-element.js';
+import { ActivityUsageEntity } from 'siren-sdk/src/activities/ActivityUsageEntity.js';
+import { AssociationEntity } from 'siren-sdk/src/activities/Association.js';
+import { EntityMixinLit } from 'siren-sdk/src/mixin/entity-mixin-lit.js';
 import getType from './types/getType';
 import { langResources } from './lang';
-import { AsyncContainerMixin, asyncStates } from '@brightspace-ui/core/mixins/async-container/async-container-mixin.js';
 import { LocalizeMixin } from '@brightspace-ui/core/mixins/localize-mixin.js';
-import { EntityMixinLit } from 'siren-sdk/src/mixin/entity-mixin-lit.js';
-import { ActivityUsageEntity } from 'siren-sdk/src/activities/ActivityUsageEntity.js';
-import { AssociationCollectionEntity } from 'siren-sdk/src/activities/Associations.js';
-import { AssociationEntity } from 'siren-sdk/src/activities/Association.js';
-import { entityFactory } from 'siren-sdk/src/es6/EntityFactory.js';
-import { SimpleEntity } from 'siren-sdk/src/es6/SimpleEntity.js';
 
 class AssociationList extends LocalizeMixin(AsyncContainerMixin(EntityMixinLit(LitElement))) {
 
@@ -110,13 +107,13 @@ class AssociationList extends LocalizeMixin(AsyncContainerMixin(EntityMixinLit(L
 		return null;
 	}
 
-	get associationType() {
-		return getType(this.type);
-	}
-
 	constructor() {
 		super();
 		this._setEntityType(ActivityUsageEntity);
+	}
+
+	get associationType() {
+		return getType(this.type);
 	}
 
 	connectedCallback() {

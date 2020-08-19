@@ -29,7 +29,7 @@ function getAssociations(root = true, transientAdd = [], transientRemove = []) {
 					'method': 'POST',
 					'fields': [
 						{
-							'name': 'transient-remove',
+							'name': 'transientDeletions',
 							'value': ['13'].concat(transientRemove)
 						},
 						{
@@ -40,11 +40,11 @@ function getAssociations(root = true, transientAdd = [], transientRemove = []) {
 					]
 				}] : []).concat([{
 					'href': 'https://99d6c88f-3f9e-45e6-b804-988b1f68e463.activities.api.dev.brightspace.com/activities/6606_703000_8d6566eb-6f69-4a73-b08d-e787f9f4b87b/usages/123060/associations',
-					'name': 'delete-association-deferred',
+					'name': 'delete-deferred-association',
 					'method': 'POST',
 					'fields': [
 						{
-							'name': 'transient-remove',
+							'name': 'transientDeletions',
 							'value': ['13'].concat(transientRemove)
 						},
 						{
@@ -96,7 +96,7 @@ function getAssociations(root = true, transientAdd = [], transientRemove = []) {
 					'method': 'POST',
 					'fields': [
 						{
-							'name': 'transient-add',
+							'name': 'transientAdditions',
 							'value': ['17'].concat(transientAdd)
 						},
 						{
@@ -111,11 +111,11 @@ function getAssociations(root = true, transientAdd = [], transientRemove = []) {
 					]
 				}] : []).concat([{
 					'href': 'https://99d6c88f-3f9e-45e6-b804-988b1f68e463.activities.api.dev.brightspace.com/activities/6606_703000_8d6566eb-6f69-4a73-b08d-e787f9f4b87b/usages/123060/associations',
-					'name': 'create-association-deferred',
+					'name': 'create-deferred-association',
 					'method': 'POST',
 					'fields': [
 						{
-							'name': 'transient-add',
+							'name': 'transientAdditions',
 							'value': ['17'].concat(transientAdd)
 						},
 						{
@@ -164,7 +164,7 @@ function getAssociations(root = true, transientAdd = [], transientRemove = []) {
 					'method': 'POST',
 					'fields': [
 						{
-							'name': 'transient-add',
+							'name': 'transientAdditions',
 							'value': ['18'].concat(transientAdd)
 						},
 						{
@@ -179,11 +179,11 @@ function getAssociations(root = true, transientAdd = [], transientRemove = []) {
 					]
 				}] : []).concat([{
 					'href': 'https://99d6c88f-3f9e-45e6-b804-988b1f68e463.activities.api.dev.brightspace.com/activities/6606_703000_8d6566eb-6f69-4a73-b08d-e787f9f4b87b/usages/123060/associations',
-					'name': 'create-association-deferred',
+					'name': 'create-deferred-association',
 					'method': 'POST',
 					'fields': [
 						{
-							'name': 'transient-add',
+							'name': 'transientAdditions',
 							'value': ['18'].concat(transientAdd)
 						},
 						{
@@ -222,35 +222,7 @@ function getAssociations(root = true, transientAdd = [], transientRemove = []) {
 				'href': 'https://99d6c88f-3f9e-45e6-b804-988b1f68e463.activities.api.dev.brightspace.com/activities/6606_703000_8d6566eb-6f69-4a73-b08d-e787f9f4b87b/usages/123060'
 			}
 		],
-		'actions': (root ? [
-			{
-				'class': [
-					'start-add-associations'
-				],
-				'title': 'Start Adding Associations',
-				'href': 'https://99d6c88f-3f9e-45e6-b804-988b1f68e463.activities.api.dev.brightspace.com/activities/6606_703000_8d6566eb-6f69-4a73-b08d-e787f9f4b87b/usages/123060/associations',
-				'name': 'start-add-associations',
-				'method': 'POST',
-				'fields': [
-					{
-						'name': 'save',
-						'type': 'checkbox'
-					},
-					{
-						'name': 'transient-add',
-						'value': transientAdd
-					},
-					{
-						'name': 'transient-remove',
-						'value': transientRemove
-					},
-					{
-						'name': 'type',
-						'value': 'rubrics'
-					}
-				]
-			}
-		] : []).concat([{
+		'actions': [{
 			'class': [
 				'create'
 			],
@@ -267,48 +239,7 @@ function getAssociations(root = true, transientAdd = [], transientRemove = []) {
 					'value': 'rubrics'
 				}
 			]
-		}, {
-			'class': [
-				'apply'
-			],
-			'title': 'Apply Adding Associations',
-			'href': 'https://99d6c88f-3f9e-45e6-b804-988b1f68e463.activities.api.dev.brightspace.com/activities/6606_703000_8d6566eb-6f69-4a73-b08d-e787f9f4b87b/usages/123060/associations',
-			'name': 'apply-associations',
-			'method': 'POST',
-			'fields': [
-				{
-					'name': 'save',
-					'type': 'checkbox',
-					'value': 'true'
-				},
-				{
-					'name': 'transient-add',
-					'value': transientAdd
-				},
-				{
-					'name': 'transient-remove',
-					'value': transientRemove
-				},
-				{
-					'name': 'type',
-					'value': 'rubrics'
-				}
-			]
-		}, {
-			'class': [
-				'cancel'
-			],
-			'title': 'Cancel Adding Associations',
-			'href': 'https://99d6c88f-3f9e-45e6-b804-988b1f68e463.activities.api.dev.brightspace.com/activities/6606_703000_8d6566eb-6f69-4a73-b08d-e787f9f4b87b/usages/123060/associations',
-			'name': 'cancel-associations',
-			'method': 'GET',
-			'fields': [
-				{
-					'name': 'type',
-					'value': 'rubrics'
-				}
-			]
-		}])
+		}]
 	};
 }
 

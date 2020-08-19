@@ -41,8 +41,8 @@
 				const save = !!body.get('save');
 				const responseBody = window.getNewAssociations(
 					save,
-					save ? [] : body.getAll('transient-add'),
-					save ? [] : body.getAll('transient-remove'));
+					save ? [] : body.getAll('transientAdditions'),
+					save ? [] : body.getAll('transientDeletions'));
 				const response = new Response(
 					JSON.stringify(responseBody),
 					{ status: 200 }

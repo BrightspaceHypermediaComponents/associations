@@ -30,7 +30,7 @@ function getAssociations(transientAdd = null, transientRemove = null) {
 				}, {
 					'href': 'https://99d6c88f-3f9e-45e6-b804-988b1f68e463.activities.api.dev.brightspace.com/activities/6606_703000_8d6566eb-6f69-4a73-b08d-e787f9f4b87b/usages/123060/associations',
 					'name': 'delete-deferred-association',
-					'method': 'POST',
+					'method': 'PUT',
 					'fields': [
 						{
 							'name': 'transientAdditions',
@@ -101,7 +101,7 @@ function getAssociations(transientAdd = null, transientRemove = null) {
 				}, {
 					'href': 'https://99d6c88f-3f9e-45e6-b804-988b1f68e463.activities.api.dev.brightspace.com/activities/6606_703000_8d6566eb-6f69-4a73-b08d-e787f9f4b87b/usages/123060/associations',
 					'name': 'create-deferred-association',
-					'method': 'POST',
+					'method': 'PUT',
 					'fields': [
 						{
 							'name': 'transientAdditions',
@@ -166,7 +166,7 @@ function getAssociations(transientAdd = null, transientRemove = null) {
 				}, {
 					'href': 'https://99d6c88f-3f9e-45e6-b804-988b1f68e463.activities.api.dev.brightspace.com/activities/6606_703000_8d6566eb-6f69-4a73-b08d-e787f9f4b87b/usages/123060/associations',
 					'name': 'create-deferred-association',
-					'method': 'POST',
+					'method': 'PUT',
 					'fields': [
 						{
 							'name': 'transientAdditions',

@@ -37,22 +37,26 @@
 		};
 		window.fetch = async(href) => {
 			const body = await href.formData().catch(() => '');
-			console.debug(href, Array.from(body));
 			if (href.url.startsWith('https://99d6c88f-3f9e-45e6-b804-988b1f68e463.activities.api.dev.brightspace.com/activities/6606_703000_8d6566eb-6f69-4a73-b08d-e787f9f4b87b/usages/123060/associations') && href.method === 'POST') {
 				const save = !!body.get('save');
-				return new Response(
-					JSON.stringify(window.getNewAssociations(
-						save,
-						save ? [] : body.getAll('transient-add'),
-						save ? [] : body.getAll('transient-remove'))),
+				const responseBody = window.getNewAssociations(
+					save ? null : body.get('transientAdditions'),
+					save ? null : body.get('transientDeletions'));
+				const response = new Response(
+					JSON.stringify(responseBody),
 					{ status: 200 }
 				);
+				console.debug(href, Array.from(body), responseBody);
+				return response;
 			}
 			if (!requests[href.url]) {
+				console.debug(href, Array.from(body));
 				throw new Error('Href not found in demo network requests json', href);
 			}
 
-			return new Response(JSON.stringify(requests[href.url]), { status: 200 });
+			const response = new Response(JSON.stringify(requests[href.url]), { status: 200 });
+			console.debug(href, Array.from(body), requests[href.url]);
+			return response;
 		};
 	</script>
 	<d2l-demo-page page-title='d2l-labs-associations'>

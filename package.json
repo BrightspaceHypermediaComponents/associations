@@ -25,6 +25,7 @@
   "version": "1.0.7",
   "devDependencies": {
     "@polymer/test-fixture": "^4",
+    "@webcomponents/webcomponentsjs": "^2",
     "axe-core": "^3",
     "babel-eslint": "^10",
     "chai": "^4",
@@ -34,7 +35,6 @@
     "eslint-plugin-html": "^6",
     "eslint-plugin-lit": "^1",
     "eslint-plugin-sort-class-members": "^1",
-    "frau-ci": "^1",
     "gulp": "^4.0.2",
     "gulp-ejs": "^4.1.2",
     "gulp-rename": "^1.4.0",
@@ -47,7 +47,6 @@
   },
   "dependencies": {
     "@brightspace-ui/core": "^1",
-    "@webcomponents/webcomponentsjs": "^2",
     "d2l-alert": "BrightspaceUI/alert#semver:^4",
     "d2l-hypermedia-constants": "^6.30.0",
     "d2l-inputs": "BrightspaceUI/inputs#semver:^2",
